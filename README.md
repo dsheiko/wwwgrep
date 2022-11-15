@@ -10,6 +10,8 @@ wwwgrep https://dsheiko.com "Puppetry 3"
 
 This example will return a list of all the pages that contain the given keyword.
 
+![Example](./docs/wwwgrep.gif)
+
 ## Usage
 
 ```sh
@@ -28,3 +30,9 @@ Install using npm - we recommend a global install:
 ```sh
 npm install -g wgrep
 ```
+
+NOTE: If you install under `sudo`, do not forget about access permissions:
+```sh
+sudo chown -R $(whoami) $(npm config get prefix)/{lib/node_modules,bin,share}
+```
+See details at http://npm.github.io/installation-setup-docs/installing/a-note-on-permissions.html
