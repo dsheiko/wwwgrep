@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const HCCrawler = require( "headless-chrome-crawler" ),
       cliProgress = require( "cli-progress" ),
       { name, version } = require( "./package.json" ),
