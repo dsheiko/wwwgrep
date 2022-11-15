@@ -10,7 +10,7 @@ wwwwwgrep https://dsheiko.com "Puppetry 3"
 
 This example will return a list of all the pages that contain the given keyword.
 
-![Example](./docs/wwwwwgrep.gif)
+![Example](https://github.com/dsheiko/wwwgrep/blob/master/docs/wwwgrep.gif)
 
 ## Usage
 
