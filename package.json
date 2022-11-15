@@ -1,6 +1,6 @@
 {
   "name": "wwwgrep",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "command-line tool for searching text in entire website",
   "main": "index.js",
   "keywords": [
