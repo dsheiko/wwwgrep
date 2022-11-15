@@ -1,0 +1,24 @@
+{
+  "name": "wwwgrep",
+  "version": "0.0.1",
+  "description": "command-line tool for searching text in entire website",
+  "main": "index.js",
+  "keywords": [
+    "crawler",
+    "search",
+    "CLI"
+  ],
+  "bin": {
+      "wwwgrep": "./index.js"
+  },
+  "dependencies": {
+    "cli-progress": "^3.11.2",
+    "headless-chrome-crawler": "^1.8.0",
+    "minimist": "^1.2.7"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }, 
+  "author": "Dmitry Sheiko <me@dsheiko.com>",
+  "license": "MIT"
+}
