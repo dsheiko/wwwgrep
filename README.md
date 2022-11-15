@@ -1,21 +1,21 @@
-# wwwgrep
+# wwwwwgrep
 
 `wwwrep` is a command line tool (web-crawler) for searching text in entire website.
 
 ## Examples
 
 ```sh
-wwwgrep https://dsheiko.com "Puppetry 3"
+wwwwwgrep https://dsheiko.com "Puppetry 3"
 ```
 
 This example will return a list of all the pages that contain the given keyword.
 
-![Example](./docs/wwwgrep.gif)
+![Example](./docs/wwwwwgrep.gif)
 
 ## Usage
 
 ```sh
-wgrep <url> <keyword>
+wwwgrep <url> <keyword>
 ```
 
 where:
@@ -28,7 +28,7 @@ where:
 Install using npm - we recommend a global install:
 
 ```sh
-npm install -g wgrep
+npm install -g wwwgrep
 ```
 
 NOTE: If you install under `sudo`, do not forget about access permissions:
