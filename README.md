@@ -5,7 +5,7 @@
 ## Examples
 
 ```sh
-wwwwwgrep https://dsheiko.com "Puppetry 3"
+wwwgrep https://dsheiko.com "Puppetry 3"
 ```
 
 This example will return a list of all the pages that contain the given keyword.
