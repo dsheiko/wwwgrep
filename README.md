@@ -1,4 +1,4 @@
-🔎 wwwgrep – A Command-Line Tool for Web Scraping & Searching
+# 🔎 wwwgrep – A Command-Line Tool for Web Scraping & Searching
 
 `wwwgrep` is a lightweight command-line tool that fetches and searches content directly from web pages using regular expressions. It allows you to extract, filter, and analyze online data efficiently, making it a powerful tool for developers, researchers, and automation tasks.
 
