@@ -1,7 +1,7 @@
 {
   "name": "wwwgrep",
-  "version": "0.0.3",
-  "description": "command-line tool for searching text in entire website",
+  "version": "0.0.4",
+  "description": "🔎 wwwgrep – A Command-Line Tool for Web Scraping & Searching",
   "main": "index.js",
   "keywords": [
     "crawler",
@@ -9,7 +9,7 @@
     "CLI"
   ],
   "bin": {
-      "wwwgrep": "./index.js"
+    "wwwgrep": "./index.js"
   },
   "dependencies": {
     "cli-progress": "^3.11.2",
@@ -18,10 +18,12 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  }, 
+  },
   "pkg": {
     "scripts": "index.js",
-    "targets": [ "node16-windows-arm64" ],
+    "targets": [
+      "node16-windows-arm64"
+    ],
     "outputPath": "dist"
   },
   "author": "Dmitry Sheiko <me@dsheiko.com>",

@@ -77,10 +77,11 @@ async function main( startUrl, keyword ) {
   }, 500 );
 }
 
+console.log( `${ name }@${ version } – A Command-Line Tool for Web Scraping & Searching\n` );
+
 if ( argv._.length === 2 ) {
   const [ startUrl, keyword ] = argv._;
-  console.log( `${ name }@${ version }` );
-  main( startUrl, keyword );
+  main( normalizeLink( startUrl ), keyword );
 } else {
   console.log( `${ name } <url> <keyword>
 
