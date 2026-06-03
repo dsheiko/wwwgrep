@@ -5,29 +5,52 @@ const HCCrawler = require( "headless-chrome-crawler" ),
       { name, version } = require( "./package.json" ),
       argv = require( "minimist" )( process.argv.slice( 2 ) ),
       normalizeLink = ( link ) => link.replace( /\/$/, "" ).replace( /\?.*$/, "" ),
-      getBaseUrl = ( url ) => new URL( url ).origin;
+      getBaseUrl = ( url ) => new URL( url ).origin,
+      truncateUrl = ( url, max = 55 ) => {
+        if ( url.length <= max ) { return url; }
+        const half = Math.floor( ( max - 3 ) / 2 );
+        return url.slice( 0, half ) + "..." + url.slice( -half );
+      },
+      isTTY = !!process.stdout.isTTY,
+      showUsage = () => console.log( `${ name } <url> <keyword>
 
-async function main( startUrl, keyword, insecure ) {
+where:
+
+<url>           base URL (e.g. https://dsheiko.com)
+<keyword>       keyword to look for (e.g. Puppetry)
+--help, -h      show this help
+` );
+
+if ( argv.help || argv.h ) {
+  showUsage();
+  process.exit( 0 );
+}
+
+async function main( startUrl, keyword ) {
   const links = new Set(),
         results = [],
         errors = [],
-        bar = new cliProgress.SingleBar( {
-          format: ' {bar} {percentage}% | {value}/{total} | {url}'
-        }, cliProgress.Presets.shades_classic ),
+        startTime = Date.now(),
         baseUrl = getBaseUrl( startUrl );
 
+  const bar = isTTY
+    ? new cliProgress.SingleBar( {
+        format: " {bar} {percentage}% | {value}/{total} | ETA: {eta_formatted} | {url}"
+      }, cliProgress.Presets.shades_classic )
+    : null;
+
   const crawler = await HCCrawler.launch({
-      // --no-sandbox required in WSL2/Docker; ignoreHTTPSErrors needed because the
-      // bundled Chromium (2018) has an outdated root cert store
-      args: [ "--no-sandbox", "--disable-setuid-sandbox" ],
-      ignoreHTTPSErrors: true,
-      waitUntil: "domcontentloaded",
-      evaluatePage: (() => ({
-        body: $( "body" ).text(),
+    // --no-sandbox required in WSL2/Docker; ignoreHTTPSErrors needed because the
+    // bundled Chromium (2018) has an outdated root cert store
+    args: [ "--no-sandbox", "--disable-setuid-sandbox" ],
+    ignoreHTTPSErrors: true,
+    waitUntil: "domcontentloaded",
+    evaluatePage: (() => ({
+      body: $( "body" ).text(),
     })),
     onSuccess: ( result ) => {
       if ( result.result.body.includes( keyword ) ) {
-        results.push( `- ${ result.response.url }` );
+        results.push( result.response.url );
       }
       result.links.forEach( ( link ) => {
         const nLink = normalizeLink( link );
@@ -35,47 +58,64 @@ async function main( startUrl, keyword, insecure ) {
           return;
         }
         links.add( nLink );
-        bar.setTotal( links.size );
+        if ( bar ) { bar.setTotal( links.size ); }
         crawler.queue( nLink );
       });
-      bar.increment( 1, { url: result.response.url } );
+      if ( bar ) { bar.increment( 1, { url: truncateUrl( result.response.url ) } ); }
     },
     onError: ( error ) => {
       const url = error.options && error.options.url ? error.options.url : "unknown";
-      errors.push( `- ${ url }` );
-      bar.increment( 1, { url: `[error] ${ url }` } );
+      errors.push( url );
+      if ( bar ) { bar.increment( 1, { url: `[error] ${ truncateUrl( url ) }` } ); }
     }
   });
 
-  crawler.on( "disconnected", () => {
-    bar.update( links.size, { url: "" } );
-    bar.stop();
+  let summarized = false;
+  const printSummary = () => {
+    if ( summarized ) { return; }
+    summarized = true;
+    if ( bar ) {
+      bar.update( links.size, { url: "" } );
+      bar.stop();
+    }
+    const elapsed = ( ( Date.now() - startTime ) / 1000 ).toFixed( 1 );
     if ( results.length ) {
-      console.log( `\nThe keyword found at` );
-      results.forEach( l => console.log( l ) );
+      console.log( `\nFound ${ results.length } match${ results.length === 1 ? "" : "es" }:` );
+      results.forEach( url => console.log( `  ${ url }` ) );
     } else {
-      console.log( `\nThe keyword not found` );
+      console.log( `\nNo matches found.` );
     }
     if ( errors.length ) {
       console.log( `\nFailed to crawl (${ errors.length }):` );
-      errors.forEach( l => console.log( l ) );
+      errors.forEach( url => console.log( `  ${ url }` ) );
     }
-    console.log( `\n${ links.size } links processed` );
+    console.log( `\n${ links.size } links processed in ${ elapsed }s` );
+  };
+
+  process.on( "SIGINT", async () => {
+    try { await crawler.close(); } catch ( e ) { /* already closing */ }
+    printSummary();
+    process.exit( 0 );
   });
 
-  console.log( `looking for "${ keyword }" at ${ startUrl }` );
+  crawler.on( "disconnected", printSummary );
+
+  if ( isTTY ) { console.log( `looking for "${ keyword }" at ${ startUrl }` ); }
   links.add( startUrl );
-  bar.start( 1, 0, { url: startUrl } );
+  if ( bar ) { bar.start( 1, 0, { url: truncateUrl( startUrl ) } ); }
   await crawler.queue( startUrl );
+  // small delay so onIdle() sees the queued item as in-flight before checking
+  await new Promise( resolve => setTimeout( resolve, 500 ) );
   await crawler.onIdle();
   await crawler.close();
 }
 
-console.log( `${ name }@${ version } – A Command-Line Tool for Web Scraping & Searching\n` );
+if ( isTTY ) {
+  console.log( `${ name }@${ version } – A Command-Line Tool for Web Scraping & Searching\n` );
+}
 
 if ( argv._.length === 2 ) {
   const [ startUrl, keyword ] = argv._,
-        insecure = !!argv.insecure,
         normalized = normalizeLink( startUrl );
 
   if ( !/^https?:\/\//i.test( normalized ) ) {
@@ -83,14 +123,7 @@ if ( argv._.length === 2 ) {
     process.exit( 1 );
   }
 
-  main( normalized, keyword, insecure );
+  main( normalized, keyword );
 } else {
-  console.log( `${ name } <url> <keyword> [--insecure]
-
-where:
-
-<url>           base URL (e.g. https://dsheiko.com)
-<keyword>       keyword to look for (e.g. Puppetry)
---insecure      skip TLS certificate validation
-`);
+  showUsage();
 }
