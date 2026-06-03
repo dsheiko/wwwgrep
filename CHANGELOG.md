@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.0]
+
+### Breaking changes
+
+- **Replaced `headless-chrome-crawler` with `crawlee`** — the crawler no longer launches a browser. `CheerioCrawler` makes plain HTTP requests and parses HTML with Cheerio, so `$("body").text()` works the same way but without Puppeteer or Chromium. Pages that require JavaScript to render content will not be searched.
+
+### Bug fixes
+
+- **WSL2/Docker compatibility** — no browser process means no sandbox flags, no Chromium binary, and no `/dev/shm` constraints. Works out of the box in containerized environments.
+- **TLS errors gone** — `ignoreSslErrors: true` replaces the old `ignoreHTTPSErrors` workaround for the bundled 2018 Chromium cert store.
+- **Startup race condition removed** — the 500ms delay before `onIdle()` is no longer needed; `crawler.run()` resolves only after all requests complete.
+
+### Improvements
+
+- **2-second page timeout** — `navigationTimeoutSecs: 2` treats slow or hanging pages as failures and moves on.
+- **No storage pollution** — crawlee's request queue is written to `/tmp/wwwgrep-<pid>` and deleted on exit instead of creating a `storage/` directory in the working tree.
+- **Crawlee log output suppressed** — internal crawlee progress messages are silenced; only the tool's own output is shown.
+
 ## [0.1.0]
 
 ### Bug fixes
