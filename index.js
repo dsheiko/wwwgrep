@@ -2,6 +2,7 @@
 
 const HCCrawler = require( "headless-chrome-crawler" ),
       cliProgress = require( "cli-progress" ),
+      fs = require( "fs" ),
       { name, version } = require( "./package.json" ),
       argv = require( "minimist" )( process.argv.slice( 2 ) ),
       normalizeLink = ( link ) => link.replace( /\/$/, "" ).replace( /\?.*$/, "" ),
@@ -12,13 +13,19 @@ const HCCrawler = require( "headless-chrome-crawler" ),
         return url.slice( 0, half ) + "..." + url.slice( -half );
       },
       isTTY = !!process.stdout.isTTY,
-      showUsage = () => console.log( `${ name } <url> <keyword>
+      showUsage = () => console.log( `${ name } <url> <keyword> [options]
 
 where:
 
-<url>           base URL (e.g. https://dsheiko.com)
-<keyword>       keyword to look for (e.g. Puppetry)
---help, -h      show this help
+<url>              base URL (e.g. https://dsheiko.com)
+<keyword>          keyword or regex pattern to search for
+-i                 case-insensitive match
+--regex            treat keyword as a regular expression
+--depth N          limit crawl depth (default: unlimited)
+--concurrency N    parallel pages (default: 1)
+--max N            stop after N pages
+--output file      write matched URLs to a file
+--help, -h         show this help
 ` );
 
 if ( argv.help || argv.h ) {
@@ -26,12 +33,22 @@ if ( argv.help || argv.h ) {
   process.exit( 0 );
 }
 
-async function main( startUrl, keyword ) {
-  const links = new Set(),
+async function main( startUrl, keyword, opts ) {
+  const { caseInsensitive, useRegex, depth, concurrency, maxPages, outputFile } = opts,
+        links = new Set(),
         results = [],
         errors = [],
         startTime = Date.now(),
-        baseUrl = getBaseUrl( startUrl );
+        baseUrl = getBaseUrl( startUrl ),
+        startHostname = new URL( startUrl ).hostname,
+        pattern = useRegex
+          ? new RegExp( keyword, caseInsensitive ? "i" : "" )
+          : null,
+        matches = ( text ) => pattern
+          ? pattern.test( text )
+          : caseInsensitive
+            ? text.toLowerCase().includes( keyword.toLowerCase() )
+            : text.includes( keyword );
 
   const bar = isTTY
     ? new cliProgress.SingleBar( {
@@ -44,17 +61,23 @@ async function main( startUrl, keyword ) {
     // bundled Chromium (2018) has an outdated root cert store
     args: [ "--no-sandbox", "--disable-setuid-sandbox" ],
     ignoreHTTPSErrors: true,
+    allowedDomains: [ startHostname ],
     waitUntil: "domcontentloaded",
+    maxDepth: depth,
+    maxConcurrency: concurrency,
+    maxRequest: maxPages,
     evaluatePage: (() => ({
       body: $( "body" ).text(),
     })),
     onSuccess: ( result ) => {
-      if ( result.result.body.includes( keyword ) ) {
+      if ( matches( result.result.body ) ) {
         results.push( result.response.url );
       }
       result.links.forEach( ( link ) => {
         const nLink = normalizeLink( link );
-        if ( nLink === startUrl || !nLink.startsWith( baseUrl ) || links.has( nLink ) ) {
+        let hostname;
+        try { hostname = new URL( nLink ).hostname; } catch ( e ) { return; }
+        if ( hostname !== startHostname || links.has( nLink ) ) {
           return;
         }
         links.add( nLink );
@@ -82,6 +105,10 @@ async function main( startUrl, keyword ) {
     if ( results.length ) {
       console.log( `\nFound ${ results.length } match${ results.length === 1 ? "" : "es" }:` );
       results.forEach( url => console.log( `  ${ url }` ) );
+      if ( outputFile ) {
+        fs.writeFileSync( outputFile, results.join( "\n" ) + "\n" );
+        console.log( `\nResults saved to ${ outputFile }` );
+      }
     } else {
       console.log( `\nNo matches found.` );
     }
@@ -123,7 +150,23 @@ if ( argv._.length === 2 ) {
     process.exit( 1 );
   }
 
-  main( normalized, keyword );
+  if ( argv.regex ) {
+    try {
+      new RegExp( keyword );
+    } catch ( e ) {
+      console.error( `Error: invalid regex — ${ e.message }` );
+      process.exit( 1 );
+    }
+  }
+
+  main( normalized, keyword, {
+    caseInsensitive: !!argv.i,
+    useRegex:        !!argv.regex,
+    depth:           argv.depth != null ? parseInt( argv.depth, 10 ) : undefined,
+    concurrency:     argv.concurrency != null ? parseInt( argv.concurrency, 10 ) : 1,
+    maxPages:        argv.max != null ? parseInt( argv.max, 10 ) : undefined,
+    outputFile:      argv.output || null,
+  });
 } else {
   showUsage();
 }

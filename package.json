@@ -1,12 +1,19 @@
 {
   "name": "wwwgrep",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "🔎 wwwgrep – A Command-Line Tool for Web Scraping & Searching",
   "main": "index.js",
   "keywords": [
     "crawler",
+    "scraper",
     "search",
-    "CLI"
+    "grep",
+    "regex",
+    "headless-chrome",
+    "puppeteer",
+    "CLI",
+    "web",
+    "spider"
   ],
   "bin": {
     "wwwgrep": "./index.js"

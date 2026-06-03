@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 168" width="820" height="168">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="820" y2="168" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3fb950" stop-opacity="0.15"/>
+      <stop offset="50%" stop-color="#3fb950" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="820" height="168" fill="url(#bg)" rx="10"/>
+  <rect width="820" height="168" fill="none" stroke="#30363d" stroke-width="1" rx="10"/>
+
+  <!-- Left glow accent -->
+  <rect width="820" height="168" fill="url(#glow)" rx="10"/>
+
+  <!-- Terminal title bar -->
+  <rect x="1" y="1" width="818" height="38" fill="#161b22" rx="9"/>
+  <rect x="1" y="30" width="818" height="9" fill="#161b22"/>
+  <line x1="1" y1="39" x2="819" y2="39" stroke="#30363d" stroke-width="1"/>
+
+  <!-- Window dots -->
+  <circle cx="26" cy="20" r="5.5" fill="#ff5f57"/>
+  <circle cx="44" cy="20" r="5.5" fill="#ffbd2e"/>
+  <circle cx="62" cy="20" r="5.5" fill="#28c840"/>
+
+  <!-- Title bar label -->
+  <text x="410" y="21" font-family="ui-monospace,'SF Mono','Fira Code','Courier New',monospace" font-size="12" fill="#8b949e" text-anchor="middle" dominant-baseline="middle">~ wwwgrep</text>
+
+  <!-- Magnifying glass icon -->
+  <circle cx="72" cy="104" r="26" fill="none" stroke="#3fb950" stroke-width="3"/>
+  <line x1="91" y1="123" x2="107" y2="139" stroke="#3fb950" stroke-width="4.5" stroke-linecap="round"/>
+  <!-- horizontal equator line inside lens -->
+  <line x1="46" y1="104" x2="98" y2="104" stroke="#3fb95055" stroke-width="1.5"/>
+  <!-- vertical meridian line inside lens -->
+  <line x1="72" y1="78" x2="72" y2="130" stroke="#3fb95055" stroke-width="1.5"/>
+  <!-- inner globe ellipse -->
+  <ellipse cx="72" cy="104" rx="13" ry="26" fill="none" stroke="#3fb95055" stroke-width="1.5"/>
+
+  <!-- Main title -->
+  <text x="136" y="106" font-family="ui-monospace,'SF Mono','Fira Code','Courier New',monospace" font-size="54" font-weight="700" letter-spacing="-1">
+    <tspan fill="#3fb950">www</tspan><tspan fill="#e6edf3">grep</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text x="138" y="135" font-family="ui-monospace,'SF Mono','Fira Code','Courier New',monospace" font-size="14" fill="#8b949e" letter-spacing="0.3">crawl &amp; search websites from the command line</text>
+
+  <!-- Feature pills -->
+  <rect x="138" y="148" width="96" height="17" rx="8.5" fill="none" stroke="#3fb950" stroke-width="1"/>
+  <text x="186" y="160" font-family="ui-monospace,'SF Mono',monospace" font-size="10" fill="#3fb950" text-anchor="middle">headless chrome</text>
+
+  <rect x="242" y="148" width="44" height="17" rx="8.5" fill="#238636"/>
+  <text x="264" y="160" font-family="ui-monospace,'SF Mono',monospace" font-size="10" fill="#ffffff" text-anchor="middle">v0.1.0</text>
+
+  <rect x="294" y="148" width="40" height="17" rx="8.5" fill="none" stroke="#58a6ff" stroke-width="1"/>
+  <text x="314" y="160" font-family="ui-monospace,'SF Mono',monospace" font-size="10" fill="#58a6ff" text-anchor="middle">regex</text>
+
+  <rect x="342" y="148" width="60" height="17" rx="8.5" fill="none" stroke="#58a6ff" stroke-width="1"/>
+  <text x="372" y="160" font-family="ui-monospace,'SF Mono',monospace" font-size="10" fill="#58a6ff" text-anchor="middle">MIT license</text>
+
+  <!-- Right side: command preview -->
+  <rect x="540" y="56" width="260" height="90" rx="6" fill="#010409" stroke="#30363d" stroke-width="1"/>
+  <text x="556" y="80" font-family="ui-monospace,'SF Mono','Fira Code','Courier New',monospace" font-size="12" fill="#8b949e">$</text>
+  <text x="568" y="80" font-family="ui-monospace,'SF Mono','Fira Code','Courier New',monospace" font-size="12" fill="#e6edf3"> wwwgrep https://site.com</text>
+  <text x="568" y="96" font-family="ui-monospace,'SF Mono','Fira Code','Courier New',monospace" font-size="12" fill="#e6edf3">   "keyword" --depth 2 -i</text>
+  <text x="556" y="116" font-family="ui-monospace,'SF Mono','Fira Code','Courier New',monospace" font-size="12" fill="#3fb950">✓</text>
+  <text x="570" y="116" font-family="ui-monospace,'SF Mono','Fira Code','Courier New',monospace" font-size="12" fill="#8b949e"> Found 3 matches in 12.4s</text>
+  <text x="570" y="132" font-family="ui-monospace,'SF Mono','Fira Code','Courier New',monospace" font-size="12" fill="#58a6ff">  https://site.com/page</text>
+</svg>
