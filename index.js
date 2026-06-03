@@ -17,9 +17,13 @@ async function main( startUrl, keyword, insecure ) {
         baseUrl = getBaseUrl( startUrl );
 
   const crawler = await HCCrawler.launch({
-    ignoreHTTPSErrors: insecure,
-    evaluatePage: (() => ({
-      body: $( "body" ).text(),
+      // --no-sandbox required in WSL2/Docker; ignoreHTTPSErrors needed because the
+      // bundled Chromium (2018) has an outdated root cert store
+      args: [ "--no-sandbox", "--disable-setuid-sandbox" ],
+      ignoreHTTPSErrors: true,
+      waitUntil: "domcontentloaded",
+      evaluatePage: (() => ({
+        body: $( "body" ).text(),
     })),
     onSuccess: ( result ) => {
       if ( result.result.body.includes( keyword ) ) {
