@@ -1,6 +1,10 @@
 ![wwwgrep](https://github.com/dsheiko/wwwgrep/blob/master/docs/banner.svg)
 
-A command-line tool that crawls a website and searches every page for a keyword or regex pattern. Built on headless Chromium, so JavaScript-rendered content is included.
+Sometimes you need to verify that a specific phrase no longer appears on a website. For example, the Legal team may ask you to confirm that a trademarked term, outdated disclaimer, or compliance-related statement has been removed from all public pages.
+
+Searching the underlying content sources is often difficult or impossible. Instead, wwwgrep searches the published website itself. It crawls all publicly accessible pages (ignoring robots.txt) and looks for the specified keywords or substrings.
+
+Use it to verify content removals, compliance updates, rebranding efforts, or any large-scale text changes directly on the live website.
 
 ![Demo](https://github.com/dsheiko/wwwgrep/blob/master/docs/wwwgrep.gif)
 
@@ -31,7 +35,10 @@ wwwgrep <url> <keyword> [options]
 | `--depth N` | Limit crawl depth (default: unlimited) |
 | `--concurrency N` | Number of pages to crawl in parallel (default: 1) |
 | `--max N` | Stop after N pages |
+| `--timeout N` | Page load timeout in seconds (default: 15) |
+| `--wait N` | Extra milliseconds to wait after page load for JS rendering (default: 0) |
 | `--output file` | Write matched URLs to a file |
+| `--dump-body` | Print the body text of the first page and stop (useful for debugging) |
 | `--help`, `-h` | Show help |
 
 ## Examples
